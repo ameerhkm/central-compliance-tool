@@ -1,14 +1,15 @@
 name: AI Code Review
 
 on:
-  workflow_call:              # ← ADD THIS — allows other repos to call this workflow
+  workflow_call:
     secrets:
       GEMINI_API_KEY:
-        required: true        # caller must pass this secret in
+        required: true
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,7 +22,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install google-genai
 
       - name: Run diff analyzer
         env:
