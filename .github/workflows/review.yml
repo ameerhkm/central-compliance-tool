@@ -11,10 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout target repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          path: target-repo
+
+      - name: Checkout central workflows repo
+        uses: actions/checkout@v4
+        with:
+          repository: ameerhkm/central-compliance-tool
+          path: central-compliance-tool
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,4 +34,5 @@ jobs:
       - name: Run diff analyzer
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python analyze_diff.py
+        working-directory: target-repo
+        run: python ../central-compliance-tool/analyze_diff.py
