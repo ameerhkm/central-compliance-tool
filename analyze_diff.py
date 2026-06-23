@@ -86,18 +86,28 @@ def analyze_diff_with_gemini(diff_text):
 
 # --- ENTRY POINT ---
 if __name__ == "__main__":
-# This block only runs when you execute this file directly (not when it's imported as a module)
-
     print("Fetching local Git diff metrics...")
-    git_changes = get_git_diff()          # Step 1: Run git diff and store the output
+    git_changes = get_git_diff()
 
-    if git_changes:                        # Step 2: Only proceed if git actually returned something (not None or empty)
+    if git_changes:
         print("Streaming data payload to Gemini...")
-        json_report = analyze_diff_with_gemini(git_changes)   # Step 3: Send to Gemini, get JSON report back
+        json_report = analyze_diff_with_gemini(git_changes)
 
         print("\n=== AI-Generated Structured DevOps Report ===")
-        print(json_report)                 # Step 4: Print the final AI-generated JSON report to the terminal
+        print(json_report)
+
+        # NEW: save the report to a file so the workflow can read it
+        with open("report.json", "w") as f:
+            f.write(json_report)
+        print("Report saved to report.json")
 
     else:
+        # NEW: write a safe fallback file so later steps don't fail on missing file
+        fallback = json.dumps({
+            "release_summary": "No changes detected",
+            "risk_level": "LOW",
+            "security_concerns": "None"
+        })
+        with open("report.json", "w") as f:
+            f.write(fallback)
         print("No recent Git modifications detected or git repository uninitialized.")
-        # Shown if: you're not in a git repo, there are no commits yet, or git threw an error
